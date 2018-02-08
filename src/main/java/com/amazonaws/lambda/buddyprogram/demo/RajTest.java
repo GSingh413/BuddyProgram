@@ -23,7 +23,7 @@ public class RajTest implements RequestHandler<Object, String> {
 			Connection conn = DriverManager.getConnection(url, username, password);
 			Statement stmt = conn.createStatement();
 			ResultSet resultSet = stmt.executeQuery("SELECT email from LEAPBuddy.Users");
-
+			// Extra
 			if (resultSet.next()) {
 				String email = resultSet.getObject(1).toString();
 				System.out.println("Email: " + email);
