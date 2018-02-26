@@ -2,16 +2,23 @@ package com.amazonaws.lambda.buddyprogram.pojo;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class User {
 
 	private String email;
 	private String password;
 	private String salt;
-	private boolean isMentor;
-	private boolean isAdmin;
-	private long userId;
+	private Boolean isMentor;
+	private Boolean isAdmin;
+	private Long userId;
 	private Timestamp createdDate;
 	private Timestamp modifiedDate;
+	private String firstName;
+	private String lastName;
+	private String aboutMe;
 
 	public String getPassword() {
 		return password;
@@ -29,11 +36,11 @@ public class User {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -61,20 +68,44 @@ public class User {
 		this.salt = salt;
 	}
 
-	public boolean isMentor() {
+	public Boolean isMentor() {
 		return isMentor;
 	}
 
-	public void setMentor(boolean isMentor) {
+	public void setMentor(Boolean isMentor) {
 		this.isMentor = isMentor;
 	}
 
-	public boolean isAdmin() {
+	public Boolean isAdmin() {
 		return isAdmin;
 	}
 
-	public void setAdmin(boolean isAdmin) {
+	public void setAdmin(Boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getAboutMe() {
+		return aboutMe;
+	}
+
+	public void setAboutMe(String aboutMe) {
+		this.aboutMe = aboutMe;
 	}
 
 }
