@@ -5,15 +5,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.amazonaws.lambda.buddyprogram.pojo.ReturnObject;
 import com.amazonaws.lambda.buddyprogram.pojo.User;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LogIn implements RequestHandler<User, String> {
+public class LogIn implements RequestHandler<User, ReturnObject> {
 
-	public String handleRequest(User user, Context context) {
+	public ReturnObject handleRequest(User user, Context context) {
 		String userPassword = null;
-		Boolean success = false;
+		ReturnObject returnObject = new ReturnObject();
+		returnObject.setMessageFromServer("Invalid");
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonResponse = null;
 
 		// Get the object from the event and show its content type
 		try {
@@ -39,15 +44,22 @@ public class LogIn implements RequestHandler<User, String> {
 			dbConnection.close();
 
 			if (userPassword.compareTo(user.getPassword()) == 0) {
-				success = true;
+				returnObject.setMessageFromServer("Valid");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getStackTrace());
-			return "Error getting record";
+			returnObject.setMessageFromServer("Error getting record");
 		}
 
-		return success.toString();
+		// try {
+		// jsonResponse = mapper.writeValueAsString(returnObject);
+		// } catch (JsonProcessingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		return returnObject;
 	}
 }

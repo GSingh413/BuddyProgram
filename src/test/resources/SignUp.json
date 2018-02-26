@@ -1,6 +1,4 @@
 {
   "email": "Raj@gmail.com",
-  "password": "thecowjumped",
-  "salt": "randomSalt",
-  "isMentor": 1
+  "password": "thecowjumped"
 }

@@ -1,9 +1,11 @@
 package com.amazonaws.lambda.buddyprogram.demo;
 
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Random;
 
 import com.amazonaws.lambda.buddyprogram.pojo.User;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -36,14 +38,17 @@ public class SignUp implements RequestHandler<User, String> {
 			String password = "FBSM123abc";
 
 			Connection dbConnection = DriverManager.getConnection(url, username, password);
-			String sql = "INSERT INTO LEAPBuddy.Users (email, password, salt, mentor) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO LEAPBuddy.Users (email, password, salt) VALUES (?, ?, ?)";
+
+			byte[] array = new byte[7]; // length is bounded by 7
+			new Random().nextBytes(array);
+			String generatedString = new String(array, Charset.forName("UTF-8"));
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
 			preparedStatement.setString(1, user.getEmail());
 			preparedStatement.setString(2, user.getPassword());
-			preparedStatement.setString(3, user.getSalt());
-			preparedStatement.setBoolean(4, user.isMentor());
+			preparedStatement.setString(3, generatedString);
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -58,7 +63,6 @@ public class SignUp implements RequestHandler<User, String> {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Error: " + e.getStackTrace());
 			return "Error inserting record";
 		}
 
