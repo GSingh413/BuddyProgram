@@ -1,7 +1,6 @@
 package com.amazonaws.lambda.buddyprogram.demo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -18,11 +17,8 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 
 		// Get the object from the event and show its content type
 		try {
-			String url = "jdbc:mysql://securtyinnovationandresearch.cpu5zvvqzaxe.us-east-1.rds.amazonaws.com:3306";
-			String username = "MyBuddyPOCAdmin";
-			String password = "FBSM123abc";
+			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			Connection dbConnection = DriverManager.getConnection(url, username, password);
 			String sql = "SELECT email, first_name, last_name, about_me FROM LEAPBuddy.Users WHERE email = ?";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
@@ -40,7 +36,7 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 
 			resultSet.close();
 			preparedStatement.close();
-			dbConnection.close();
+			ConnectUtil.closeDBConnection(dbConnection);
 
 			returnObject.setMessageFromServer("Success");
 			returnObject.setUser(user);

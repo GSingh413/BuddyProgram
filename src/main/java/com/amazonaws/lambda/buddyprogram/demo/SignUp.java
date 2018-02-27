@@ -2,7 +2,6 @@ package com.amazonaws.lambda.buddyprogram.demo;
 
 import java.nio.charset.Charset;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Random;
@@ -33,11 +32,8 @@ public class SignUp implements RequestHandler<User, String> {
 
 		// Get the object from the event and show its content type
 		try {
-			String url = "jdbc:mysql://securtyinnovationandresearch.cpu5zvvqzaxe.us-east-1.rds.amazonaws.com:3306";
-			String username = "MyBuddyPOCAdmin";
-			String password = "FBSM123abc";
+			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			Connection dbConnection = DriverManager.getConnection(url, username, password);
 			String sql = "INSERT INTO LEAPBuddy.Users (email, password, salt) VALUES (?, ?, ?)";
 
 			byte[] array = new byte[7]; // length is bounded by 7
@@ -59,7 +55,7 @@ public class SignUp implements RequestHandler<User, String> {
 
 			resultSet.close();
 			preparedStatement.close();
-			dbConnection.close();
+			ConnectUtil.closeDBConnection(dbConnection);
 
 		} catch (Exception e) {
 			e.printStackTrace();
