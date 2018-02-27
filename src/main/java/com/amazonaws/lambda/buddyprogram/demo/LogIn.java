@@ -18,18 +18,18 @@ public class LogIn implements RequestHandler<User, ReturnObject> {
 
 		// Get the object from the event and show its content type
 		try {
-
 			// utility function*******
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT password FROM LEAPBuddy.Users WHERE email = ?";
+			String sql = "SELECT (password, user_id) FROM LEAPBuddy.Users WHERE email = ?";
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
 			preparedStatement.setString(1, user.getEmail());
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				userPassword = resultSet.getObject(1).toString();
+				userPassword = resultSet.getString("password");
+				// user.setUserId(resultSet.getLong("user_id"));
 			}
 
 			resultSet.close();
@@ -40,6 +40,7 @@ public class LogIn implements RequestHandler<User, ReturnObject> {
 
 			if (userPassword.compareTo(user.getPassword()) == 0) {
 				returnObject.setMessageFromServer("Valid");
+				returnObject.setUser(user);
 			}
 
 		} catch (Exception e) {

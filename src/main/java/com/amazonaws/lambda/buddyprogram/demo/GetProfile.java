@@ -19,7 +19,7 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 		try {
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT email, first_name, last_name, about_me FROM LEAPBuddy.Users WHERE email = ?";
+			String sql = "SELECT email, first_name, last_name, about_me, user_id FROM LEAPBuddy.Users WHERE email = ?";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
@@ -32,6 +32,7 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 				user.setFirstName(resultSet.getString("first_name"));
 				user.setLastName(resultSet.getString("last_name"));
 				user.setAboutMe(resultSet.getString("about_me"));
+				user.setUserId(resultSet.getLong("user_id"));
 			}
 
 			resultSet.close();
