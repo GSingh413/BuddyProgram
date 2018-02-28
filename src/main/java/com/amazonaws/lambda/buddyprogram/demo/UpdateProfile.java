@@ -1,9 +1,9 @@
 package com.amazonaws.lambda.buddyprogram.demo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import com.amazonaws.lambda.buddyprogram.pojo.ReturnObject;
 import com.amazonaws.lambda.buddyprogram.pojo.User;
@@ -16,31 +16,24 @@ public class UpdateProfile implements RequestHandler<User, ReturnObject> {
 		ReturnObject returnObject = new ReturnObject();
 		returnObject.setMessageFromServer("Invalid Request");
 
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+		Connection dbConnection = null;
 		// Get the object from the event and show its content type
 		try {
-			String url = "jdbc:mysql://securtyinnovationandresearch.cpu5zvvqzaxe.us-east-1.rds.amazonaws.com:3306";
-			String username = "MyBuddyPOCAdmin";
-			String password = "FBSM123abc";
+			dbConnection = ConnectUtil.createNewDBConnection();
 
-			Connection dbConnection = DriverManager.getConnection(url, username, password);
-			String sql = "SCT email, first_name, last_name, about_me FROM LEAPBuddy.Users WHERE email = ?";
+			String sql = "UPDATE LEAPBuddy.Users SET first_name = ?, last_name = ?, about_me = ?, mentor = ? WHERE user_id = ?";
 
-			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
+			preparedStatement = dbConnection.prepareStatement(sql);
 
-			preparedStatement.setString(1, user.getEmail());
+			preparedStatement.setString(1, user.getFirstName());
+			preparedStatement.setString(2, user.getLastName());
+			preparedStatement.setString(3, user.getAboutMe());
+			preparedStatement.setBoolean(4, user.isMentor());
+			preparedStatement.setLong(5, user.getUserId());
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-
-			while (resultSet.next()) {
-				user.setEmail(resultSet.getString("email"));
-				user.setFirstName(resultSet.getString("first_name"));
-				user.setLastName(resultSet.getString("last_name"));
-				user.setAboutMe(resultSet.getString("about_me"));
-			}
-
-			resultSet.close();
-			preparedStatement.close();
-			dbConnection.close();
+			resultSet = preparedStatement.executeQuery();
 
 			returnObject.setMessageFromServer("Success");
 			returnObject.setUser(user);
@@ -48,7 +41,18 @@ public class UpdateProfile implements RequestHandler<User, ReturnObject> {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getStackTrace());
-			returnObject.setMessageFromServer("Error getting record");
+			returnObject.setMessageFromServer("Error updating record");
+		} finally {
+			try {
+				resultSet.close();
+				preparedStatement.close();
+				ConnectUtil.closeDBConnection(dbConnection);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("Error: " + e.getStackTrace());
+				returnObject.setMessageFromServer("Error updating record");
+			}
+
 		}
 
 		return returnObject;

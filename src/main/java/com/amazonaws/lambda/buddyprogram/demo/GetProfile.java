@@ -19,20 +19,20 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 		try {
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT email, first_name, last_name, about_me, user_id FROM LEAPBuddy.Users WHERE email = ?";
+			String sql = "SELECT first_name, last_name, about_me, mentor FROM LEAPBuddy.Users WHERE user_id = ?";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
-			preparedStatement.setString(1, user.getEmail());
+			preparedStatement.setLong(1, user.getUserId());
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				user.setEmail(resultSet.getString("email"));
 				user.setFirstName(resultSet.getString("first_name"));
 				user.setLastName(resultSet.getString("last_name"));
 				user.setAboutMe(resultSet.getString("about_me"));
-				user.setUserId(resultSet.getLong("user_id"));
+				user.setMentor(resultSet.getBoolean("mentor"));
+
 			}
 
 			resultSet.close();
