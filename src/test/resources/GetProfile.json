@@ -3,5 +3,6 @@
   "firstName" : "Rick",
   "lastName": "Moles",
   "aboutMe": "Sing sing",
-  "mentor": true
+  "mentor": true,
+  "admin": true
 }
