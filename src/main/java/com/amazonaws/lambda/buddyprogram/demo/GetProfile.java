@@ -32,7 +32,6 @@ public class GetProfile implements RequestHandler<User, ReturnObject> {
 				user.setLastName(resultSet.getString("last_name"));
 				user.setAboutMe(resultSet.getString("about_me"));
 				user.setMentor(resultSet.getBoolean("mentor"));
-				user.setAdmin(resultSet.getBoolean("admin"));
 
 			}
 

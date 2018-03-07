@@ -3,7 +3,6 @@ package com.amazonaws.lambda.buddyprogram.demo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import com.amazonaws.lambda.buddyprogram.pojo.ReturnObject;
 import com.amazonaws.lambda.buddyprogram.pojo.User;
@@ -38,20 +37,23 @@ public class UpdateProfile implements RequestHandler<User, ReturnObject> {
 			returnObject.setMessageFromServer("Success");
 			returnObject.setUser(user);
 
+			resultSet.close();
+			preparedStatement.close();
+			ConnectUtil.closeDBConnection(dbConnection);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getStackTrace());
 			returnObject.setMessageFromServer("Error updating record");
 		} finally {
-			try {
-				resultSet.close();
-				preparedStatement.close();
-				ConnectUtil.closeDBConnection(dbConnection);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("Error: " + e.getStackTrace());
-				returnObject.setMessageFromServer("Error updating record");
-			}
+			// try {
+			// resultSet.close();
+			// preparedStatement.close();
+			// ConnectUtil.closeDBConnection(dbConnection);
+			// } catch (SQLException e) {
+			// e.printStackTrace();
+			// System.out.println("Error: " + e.getStackTrace());
+			// returnObject.setMessageFromServer("Error updating record");
+			// }
 
 		}
 

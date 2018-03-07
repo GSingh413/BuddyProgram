@@ -3,54 +3,50 @@ package com.amazonaws.lambda.buddyprogram.demo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 
 import com.amazonaws.lambda.buddyprogram.pojo.Interest;
-import com.amazonaws.lambda.buddyprogram.pojo.InterestEnum;
 import com.amazonaws.lambda.buddyprogram.pojo.ReturnObject;
-import com.amazonaws.lambda.buddyprogram.pojo.User;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-public class GetInterests implements RequestHandler<User, ReturnObject> {
+public class AddInterest implements RequestHandler<Interest, ReturnObject> {
 
-	public ReturnObject handleRequest(User user, Context context) {
+	public ReturnObject handleRequest(Interest interest, Context context) {
 		ReturnObject returnObject = new ReturnObject();
-		returnObject.setMessageFromServer("Invalid Request");
+
 		try {
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT interest_id, interest_title FROM LEAPBuddy.Interests WHERE user_id = ?";
+			String sql = "INSERT INTO LEAPBuddy.Interests (interest_title, user_id) VALUES (?, ?)";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
-			preparedStatement.setLong(1, user.getUserId());
+			preparedStatement.setString(1, interest.getInterestEnum().interestTitle());
+			preparedStatement.setLong(2, interest.getUserId());
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 
-			List<Interest> interests = new ArrayList<>();
-
-			while (resultSet.next()) {
-				Interest interest = new Interest();
-				interest.setInterestId(resultSet.getLong("interest_id"));
-				interest.setInterestEnum(InterestEnum.fromString(resultSet.getString("interest_title")));
-				interests.add(interest);
+			ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				interest.setInterestId(generatedKeys.getLong(1));
+			} else {
+				throw new SQLException("Creating user failed, no ID obtained.");
 			}
 
+			generatedKeys.close();
 			resultSet.close();
 			preparedStatement.close();
 			ConnectUtil.closeDBConnection(dbConnection);
 
 			returnObject.setMessageFromServer("Success");
-			returnObject.setInterests(interests);
+			returnObject.setInterest(interest);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getStackTrace());
-			returnObject.setMessageFromServer("Error getting record");
+			returnObject.setMessageFromServer("Error updating record");
 		}
-
 		return returnObject;
 	}
 
