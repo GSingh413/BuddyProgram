@@ -1,4 +1,5 @@
 {
-  "userId": 2,
-  "interestId": 127
+  "userId": 3,
+  "interestId": 130,
+  "interestEnum" : "BIG_DATA"
 }
