@@ -17,13 +17,12 @@ public class RemoveInterest implements RequestHandler<Interest, ReturnObject> {
 		try {
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "DELETE FROM LEAPBuddy.Interests WHERE user_id = ? AND interest_id = ? AND interest_title = ?";
+			String sql = "DELETE FROM LEAPBuddy.Interests WHERE user_id = ? AND interest_title = ?";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
 			preparedStatement.setLong(1, interest.getUserId());
-			preparedStatement.setLong(2, interest.getInterestId());
-			preparedStatement.setString(3, interest.getInterestEnum().interestTitle());
+			preparedStatement.setString(2, interest.getInterestEnum().interestTitle());
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 

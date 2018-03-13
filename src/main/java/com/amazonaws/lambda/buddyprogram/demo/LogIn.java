@@ -21,15 +21,15 @@ public class LogIn implements RequestHandler<User, ReturnObject> {
 			// utility function*******
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT (password, user_id) FROM LEAPBuddy.Users WHERE email = ?";
+			String sql = "SELECT password, user_id FROM LEAPBuddy.Users WHERE email = ? LIMIT 1";
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
 			preparedStatement.setString(1, user.getEmail());
 			ResultSet resultSet = preparedStatement.executeQuery();
 
-			while (resultSet.next()) {
+			if (resultSet.next()) {
 				userPassword = resultSet.getString("password");
-				// user.setUserId(resultSet.getLong("user_id"));
+				user.setUserId(resultSet.getLong("user_id"));
 			}
 
 			resultSet.close();
@@ -39,8 +39,10 @@ public class LogIn implements RequestHandler<User, ReturnObject> {
 			ConnectUtil.closeDBConnection(dbConnection);
 
 			if (userPassword.compareTo(user.getPassword()) == 0) {
-				returnObject.setMessageFromServer("Valid");
+				returnObject.setMessageFromServer("Success");
 				returnObject.setUser(user);
+			} else {
+				returnObject.setMessageFromServer("Incorrect Password");
 			}
 
 		} catch (Exception e) {

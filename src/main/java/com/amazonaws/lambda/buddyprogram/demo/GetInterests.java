@@ -21,7 +21,7 @@ public class GetInterests implements RequestHandler<User, ReturnObject> {
 		try {
 			Connection dbConnection = ConnectUtil.createNewDBConnection();
 
-			String sql = "SELECT interest_id, interest_title FROM LEAPBuddy.Interests WHERE user_id = ?";
+			String sql = "SELECT DISTINCT interest_title FROM LEAPBuddy.Interests WHERE user_id = ?";
 
 			PreparedStatement preparedStatement = dbConnection.prepareStatement(sql);
 
@@ -33,7 +33,6 @@ public class GetInterests implements RequestHandler<User, ReturnObject> {
 
 			while (resultSet.next()) {
 				Interest interest = new Interest();
-				interest.setInterestId(resultSet.getLong("interest_id"));
 				interest.setInterestEnum(InterestEnum.fromString(resultSet.getString("interest_title")));
 				interests.add(interest);
 			}
